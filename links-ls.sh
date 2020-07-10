@@ -36,11 +36,11 @@ fi
 if test $inbound; then
     echo "in:"
     jq --arg path $path '.[] | select(.target | contains($path))' <$linksfile \
-       | source links-print
+       | source $install_path/links-print.sh
 fi
 
 if test $outbound; then
     echo "out"
     jq --arg path $path '.[] | select(.source | contains($path))' <$linksfile \
-       | source links-print
+       | source $install_path/links-print.sh
 fi

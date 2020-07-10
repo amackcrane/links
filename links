@@ -7,7 +7,12 @@
 # 
 
 # get install path
-export path=$(cat $HOME/.config/links)
+export install_path=$(cat $HOME/.config/links)
+if test ! -e "$path/links"; then
+    echo "Can't find source"
+    echo "Make sure path to source files is saved in $HOME/.config/links"
+    exit
+fi
 
 command=$1
 shift
@@ -46,10 +51,10 @@ case $command in
 	    file=$PWD/$file
 	fi
 	linksfile=$(dirname $file)/.links
-	source $path/links-get.sh $file $linksfile $@
+	source $install_path/links-get.sh $file $linksfile $@
 	;;
     ls)
-	source $path/links-ls.sh $@
+	source $install_path/links-ls.sh $@
 	;;
     crt|rm)
 	# resolve source/target paths
@@ -89,16 +94,18 @@ case $command in
 
 	case $command in
 	    crt)
-		source $path/links-crt.sh $src $target $src_file $tar_file $@
+		source $install_path/links-crt.sh \
+		       $src $target $src_file $tar_file $@
 		;;
 	    rm)
-		source $path/links-rm.sh $src $target $src_file $tar_file $@
+		source $install_path/links-rm.sh \
+		       $src $target $src_file $tar_file $@
 		;;
 	esac
 	;;
     open)
 	export src_file=.links
-	source $path/links-open.sh $@
+	source $install_path/links-open.sh $@
 	;;
     *)
 	printf "$usage"

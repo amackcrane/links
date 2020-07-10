@@ -21,12 +21,12 @@ done
 if test $inbound; then
     echo "in:"
     jq --arg file $file '.[] | select(.target==$file)' <$linksfile \
-       | source links-print
+       | source $install_path/links-print.sh
 fi
 
 if test $outbound; then
     echo "out"
     jq --arg file $file '.[] | select(.source==$file)' <$linksfile \
-       | source links-print
+       | source $install_path/links-print.sh
 fi
 
