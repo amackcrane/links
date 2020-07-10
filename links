@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# Links
+#
+# stores connections between files & directories
+# in json files ./.links
+# 
+
+# get install path
+export path=$(cat $HOME/.config/links)
+
+command=$1
+shift
+
+export usage=$(cat <<EOF
+links subcommands:
+
+ls <path> [-i | -o]
+crt <source> <target>
+edit <source> <target>
+rm <source> <target>
+get <path> [-i | -o]
+open <index> <source | target>
+- where 'index' is as given in 'links ls'
+
+EOF
+     )"\n\n"
+
+
+case $command in
+    get)
+	# resolve path stuff
+	file=$1
+	shift
+	if test -z $file; then
+	    echo "links-get needs file booo"
+	    printf "$usage"
+	    exit
+	fi
+	if test ! -e $file; then
+	    echo "bad filepath w/r/t cwd"
+	    exit
+	fi
+
+	if ! [[ $file =~ ^/ ]]; then
+	    file=$PWD/$file
+	fi
+	linksfile=$(dirname $file)/.links
+	source $path/links-get.sh $file $linksfile $@
+	;;
+    ls)
+	source $path/links-ls.sh $@
+	;;
+    crt|rm)
+	# resolve source/target paths
+	src=$1
+	target=$2
+	shift 2
+
+	# validate arguments
+	if test -z "$src" -o -z "$target"; then
+	    printf "$usage"
+	    exit
+	fi
+	if ! test -e $src -a -e $target; then
+	    echo "One or more arguments don't exist in filesystem."
+	    exit
+	fi
+
+	# make absolute
+	if ! [[ $src =~ ^/ ]]; then
+	    src=$PWD/$src
+	fi
+	if ! [[ $target =~ ^/ ]]; then
+	    target=$PWD/$target
+	fi
+	
+	# we wanna hold both in and out links...
+	src_file=$(dirname $src)/.links
+	tar_file=$(dirname $target)/.links
+
+	# check for links files
+	if ! test -e $src_file; then
+	    jq -n '[]' >$src_file
+	fi
+	if ! test -e $tar_file; then
+	    jq -n '[]' >$tar_file
+	fi
+
+	case $command in
+	    crt)
+		source $path/links-crt.sh $src $target $src_file $tar_file $@
+		;;
+	    rm)
+		source $path/links-rm.sh $src $target $src_file $tar_file $@
+		;;
+	esac
+	;;
+    open)
+	export src_file=.links
+	source $path/links-open.sh $@
+	;;
+    *)
+	printf "$usage"
+	exit
+	;;
+esac
+
+
