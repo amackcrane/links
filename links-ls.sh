@@ -20,10 +20,21 @@ done
 if test -z $path; then
     path=$PWD
 fi
+if ! [[ $path =~ ^/ ]]; then
+    path=$PWD/$path
+fi
+if ! test -d $path; then
+    echo "Bad directory path"
+    exit
+fi
+
+# standardize filepath (important for matching below)
+path=$(cd $path && pwd)
+
 
 linksfile=${path%/}/.links
 
-if ! test -e $linksfile; then
+if ! test -s $linksfile; then
     echo "No links in this directory"
     exit
 fi

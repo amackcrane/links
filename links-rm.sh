@@ -1,10 +1,3 @@
-#!/bin/bash
-
-src=$1
-target=$2
-src_file=$3
-tar_file=$4
-shift 4
 
 
 # arg: .links filepath
@@ -17,7 +10,8 @@ function remove {
     }
 
 # confirm
-to_rm=$(jq --arg src $src --arg target $target '.[] | select((.source==$src) and .target==$target)' <$src_file)
+check_file=${linksfiles[0]}
+to_rm=$(jq --arg src $src --arg target $target '.[] | select((.source==$src) and .target==$target)' <$check_file)
 
 if test -z "$to_rm"; then
     echo "No matching links"
@@ -33,9 +27,9 @@ if test $confirm != "y"; then
 fi
 
 # remove
-remove $src_file
+for f in ${linksfiles[@]}; do
+    remove $f
+done
 
-if test $src_file != $tar_file; then
-    remove $tar_file
-fi
+
 

@@ -1,19 +1,12 @@
 #!/bin/bash
 
+echo "recording in:"
+echo "${linksfiles[@]}"
 
-src=$1
-target=$2
-src_file=$3
-tar_file=$4
-shift 4
-
-
-# todo?
-# more fields
-#   short names
 
 # check if link already registered
-already=$(jq --arg src $src --arg target $target '.[] | select(.source==$src) | select(.target==$target)' <$src_file)
+check_file=${linksfiles[0]}
+already=$(jq --arg src $src --arg target $target '.[] | select(.source==$src) | select(.target==$target)' <$check_file)
 if test "$already"; then
     echo "Link already exists"
     exit
@@ -33,14 +26,11 @@ function crt {
 
     }
 
-# write to source dir
-crt $src_file
-
-
-# write to target dir if it's elsewhere
-if test $src_file != $tar_file; then
-    crt $tar_file
-fi
+# write to .links files
+for f in ${linksfiles[@]}; do
+    echo "recording in $f"
+    crt $f
+done
 
 
 # old way:

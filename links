@@ -55,34 +55,45 @@ case $command in
 	    exit
 	fi
 
-	# make absolute
+	# make absolute/standardize
 	if ! [[ $src =~ ^/ ]]; then
-	    src=$PWD/$src
+	    src=$(cd $PWD/$src && pwd)
 	fi
 	if ! [[ $target =~ ^/ ]]; then
-	    target=$PWD/$target
+	    target=$(cd $PWD/$target && pwd)
 	fi
+	target=${target%/}
+	src=${src%/}
 	
-	# we wanna hold both in and out links...
-	src_file=$(dirname $src)/.links
-	tar_file=$(dirname $target)/.links
+	# record links in both locations
+	linksfiles=($(dirname $src)/.links)
+	if test $(dirname $target) != $(dirname $src); then
+	    linksfiles+=($(dirname $target)/.links)
+	fi
+
+	# if src/target is a directory, we record its links inside it as well...
+	if test -d $src; then
+	    linksfiles+=($src/.links)
+	fi
+	if test -d $target; then
+	    linksfiles+=($target/.links)
+	fi
 
 	# check for links files
-	if ! test -e $src_file; then
-	    jq -n '[]' >$src_file
-	fi
-	if ! test -e $tar_file; then
-	    jq -n '[]' >$tar_file
-	fi
+	for f in ${linksfiles[@]}; do
+	    if ! test -s $f; then
+		jq -n '[]' >$f
+	    fi
+	done
 
+	export src target linksfiles
+	
 	case $command in
 	    crt)
-		source $install_path/links-crt.sh \
-		       $src $target $src_file $tar_file $@
+		source $install_path/links-crt.sh $@
 		;;
 	    rm)
-		source $install_path/links-rm.sh \
-		       $src $target $src_file $tar_file $@
+		source $install_path/links-rm.sh $@
 		;;
 	esac
 	;;
