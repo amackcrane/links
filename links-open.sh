@@ -1,16 +1,27 @@
 #!/bin/bash
 
-ind=$1
-name=$2
+key=$1
 
-# index refers to order of .links file, as indicated in 'links ls'
+# search for key on source, target
+file=$(jq --arg key $key \
+	  '.[] | to_entries | .[] | select(.key=="source" or .key=="target") | .value | select(contains($key))' <$src_file)
+num=$(jq -s 'length' <<<$file)
 
-file=$(jq -r --argjson ind $ind --arg name $name '.[$ind] | .[$name]' <$src_file)
+if test $num -eq 0; then
+    echo "No matches"
+    exit
+elif test $num -gt 1; then
+    echo "Ambiguous!"
+    exit
+fi
+
+# strip quotes
+file=${file%\"}
+file=${file#\"}
 
 if [[ $file =~ .txt$ ]]; then
     amcmacs $file
-elif ! [[ $file =~ \. ]]; then
-    # assume directory paths don't contain dots!
+elif test -d "$file"; then
     echo "cd $file"
 else
     open $file

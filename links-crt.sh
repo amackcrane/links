@@ -1,8 +1,5 @@
 #!/bin/bash
 
-echo "recording in:"
-echo "${linksfiles[@]}"
-
 
 # check if link already registered
 check_file=${linksfiles[0]}
@@ -28,7 +25,6 @@ function crt {
 
 # write to .links files
 for f in ${linksfiles[@]}; do
-    echo "recording in $f"
     crt $f
 done
 

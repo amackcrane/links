@@ -22,14 +22,16 @@ links subcommands:
 
 crt <source> <target>
 edit <source> <target>
+- not implemented...
 rm <source> <target>
 get <path> [-i | -o]
 - if path omitted or given w/ trailing slash, prints all links
-   in current/given directory
+   in current or given directory
 - otherwise, prints links to/from <path>
 - also accepts 'get <search_key> ...' to match filenames in ./.links
-open <index> <source | target>
-- where 'index' is as given in 'links ls'
+open <key>
+- open file referenced in ./.links
+- must yield unique match
 
 EOF
      )"\n\n"
