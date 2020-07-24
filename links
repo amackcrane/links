@@ -4,10 +4,34 @@
 #
 # stores connections between files & directories
 # in json files ./.links
-# 
+#
 
-# get install path
-export install_path=$(cat $HOME/.config/links)
+config_path=$HOME/.config/links
+
+function configure {
+    echo "Configure 'links'!"
+    read -p "Folder where links is installed (relative or absolute) > " loc
+    if ! test -d "$loc"; then
+	echo "Bad directory path :("
+	exit
+    fi
+    loc=$(cd $loc && pwd)
+    read -p "Preferred text editor > " edit
+    read -p "Program to open pdfs > " pdf
+
+    cat <<EOF >$config_path
+install_path=$loc
+links_editor=$edit
+pdf_viewer=$pdf
+EOF
+}
+
+# configure if needed
+if ! test -s $HOME/.config/links; then
+    configure
+fi
+    
+source $HOME/.config/links
 if test ! -e "$install_path/links"; then
     echo "Can't find source"
     echo "Make sure path to source files is saved in $HOME/.config/links"
@@ -20,6 +44,7 @@ shift
 export usage=$(cat <<EOF
 links subcommands:
 
+config
 crt <source> <target>
 edit <source> <target>
 - not implemented...
@@ -59,10 +84,12 @@ case $command in
 
 	# make absolute/standardize
 	if ! [[ $src =~ ^/ ]]; then
-	    src=$(cd $PWD/$src && pwd)
+	    src=$PWD/$src
+	    src=$(cd $(dirname $src) && pwd)/$(basename $src)
 	fi
 	if ! [[ $target =~ ^/ ]]; then
-	    target=$(cd $PWD/$target && pwd)
+	    target=$PWD/$target
+	    target=$(cd $(dirname $target) && pwd)/$(basename $target)
 	fi
 	target=${target%/}
 	src=${src%/}
@@ -106,6 +133,9 @@ case $command in
     help|--help|-h)
 	printf "$usage"
 	exit
+	;;
+    config)
+	configure
 	;;
     *)
 	echo "unrecognized command; 'help' for usage"

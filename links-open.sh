@@ -20,10 +20,13 @@ file=${file%\"}
 file=${file#\"}
 
 if [[ $file =~ .txt$ ]]; then
-    amcmacs $file
+    $links_editor $file
 elif test -d "$file"; then
     echo "cd $file"
+elif [[ $file =~ .pdf$ ]]; then
+    $pdf_viewer $file
 else
+    # portability whoops
     open $file
 fi
 
