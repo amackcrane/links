@@ -8,7 +8,7 @@
 
 # get install path
 export install_path=$(cat $HOME/.config/links)
-if test ! -e "$path/links"; then
+if test ! -e "$install_path/links"; then
     echo "Can't find source"
     echo "Make sure path to source files is saved in $HOME/.config/links"
     exit
@@ -20,11 +20,14 @@ shift
 export usage=$(cat <<EOF
 links subcommands:
 
-ls <path> [-i | -o]
 crt <source> <target>
 edit <source> <target>
 rm <source> <target>
 get <path> [-i | -o]
+- if path omitted or given w/ trailing slash, prints all links
+   in current/given directory
+- otherwise, prints links to/from <path>
+- also accepts 'get <search_key> ...' to match filenames in ./.links
 open <index> <source | target>
 - where 'index' is as given in 'links ls'
 
@@ -34,27 +37,7 @@ EOF
 
 case $command in
     get)
-	# resolve path stuff
-	file=$1
-	shift
-	if test -z $file; then
-	    echo "links-get needs file booo"
-	    printf "$usage"
-	    exit
-	fi
-	if test ! -e $file; then
-	    echo "bad filepath w/r/t cwd"
-	    exit
-	fi
-
-	if ! [[ $file =~ ^/ ]]; then
-	    file=$PWD/$file
-	fi
-	linksfile=$(dirname $file)/.links
-	source $install_path/links-get.sh $file $linksfile $@
-	;;
-    ls)
-	source $install_path/links-ls.sh $@
+	source $install_path/links-get.sh $@
 	;;
     crt|rm)
 	# resolve source/target paths
@@ -107,10 +90,12 @@ case $command in
 	export src_file=.links
 	source $install_path/links-open.sh $@
 	;;
-    *)
+    help|--help|-h)
 	printf "$usage"
 	exit
 	;;
+    *)
+	echo "unrecognized command; 'help' for usage"
 esac
 
 

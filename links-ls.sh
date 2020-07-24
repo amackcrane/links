@@ -21,10 +21,11 @@ if test -z $path; then
     path=$PWD
 fi
 
-linksfile=$path/.links
+linksfile=${path%/}/.links
 
 if ! test -e $linksfile; then
     echo "No links in this directory"
+    exit
 fi
 
 
