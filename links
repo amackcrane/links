@@ -47,7 +47,6 @@ links subcommands:
 config
 crt <source> <target>
 edit <source> <target>
-- not implemented...
 rm <source> <target>
 get <path> [-i | -o]
 - if path omitted or given w/ trailing slash, prints all links
