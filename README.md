@@ -9,7 +9,7 @@ Track connections or dependencies between files/folders across different branche
 
 * put repo somewhere
 * install [jq](https://stedolan.github.io/jq/)
-* copy 'links' to search path e.g. /usr/local/bin
+* copy 'links' to search path e.g. /usr/local/bin (and make executable)
 * 'links config'
 
 portability notes...
