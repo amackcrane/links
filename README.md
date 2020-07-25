@@ -12,8 +12,9 @@ Track connections or dependencies between files/folders across different branche
 * 'links config'
 
 
-links subcommands:
+### subcommands:
 
+```
 config
 crt <source> <target>
 edit <source> <target>
@@ -26,3 +27,4 @@ get <path> [-i | -o]
 open <key>
 - open file referenced in ./.links
 - search key must yield unique match
+```
