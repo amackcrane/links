@@ -66,7 +66,7 @@ case $command in
     get)
 	source $install_path/links-get.sh $@
 	;;
-    crt|rm)
+    crt|rm|edit)
 	# resolve source/target paths
 	src=$1
 	target=$2
@@ -123,6 +123,9 @@ case $command in
 		;;
 	    rm)
 		source $install_path/links-rm.sh $@
+		;;
+	    edit)
+		source $install_path/links-edit.sh $@
 		;;
 	esac
 	;;
