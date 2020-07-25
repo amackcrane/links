@@ -8,9 +8,13 @@ Track connections or dependencies between files/folders across different branche
 ### Install (unix)
 
 * put repo somewhere
+* install [jq](https://stedolan.github.io/jq/)
 * copy 'links' to search path e.g. /usr/local/bin
 * 'links config'
 
+portability notes...
+* 'links-print.sh' uses 'gsed', which is GNU sed via homebrew. might be able to change this to 'sed' depending on OS...
+* 'links-open.sh' only considers (and configures for) .txt and .pdf files, so this could bear extending
 
 ### subcommands:
 
